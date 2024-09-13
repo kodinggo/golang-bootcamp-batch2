@@ -27,4 +27,22 @@ func main() {
 		Usia: 20,
 	}
 	fmt.Println(person.Nama, person.Usia)
+
+	// Slice of struct
+	listMhs := []Mahasiswa{
+		{
+			ID:   2,
+			Nama: "Bambang",
+		},
+		{
+			ID:   3,
+			Nama: "Eric",
+		},
+	}
+	listMhs = append(listMhs, Mahasiswa{
+		ID:   4,
+		Nama: "Joko",
+	})
+	fmt.Println(listMhs[0].ID, listMhs[0].Nama)
+	fmt.Println(len(listMhs))
 }

@@ -31,9 +31,13 @@ func main() {
 	}
 
 	// Convert ke JSON
-	data := map[string]string{
-		"id":   "1",
-		"name": "Eric",
+	data := map[string]any{
+		"id":      "1",
+		"name":    "Eric",
+		"hobbies": []string{"swimming", "running"},
+		"detail": map[string]string{
+			"abc": "efg",
+		},
 	}
 	byteData, _ := json.Marshal(data)
 	fmt.Println(string(byteData))

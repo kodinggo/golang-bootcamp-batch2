@@ -30,6 +30,20 @@ func main() {
 	foo(&angka)
 	foo(&angka)
 	fmt.Println("angka", angka)
+
+	// fungsi new
+	label := new(string)                     // var label *string
+	fmt.Println("alamt memori label", label) // alamat memori
+	fmt.Println("nilai asli label", *label)  // "" string kosong
+	*label = "abc"
+	fmt.Println("nilai asli label", *label) // "" string kosong
+
+	var y *string
+	fmt.Println(y) // <nil>
+
+	var m map[string]any
+	fmt.Println(m)
+	fmt.Println("apakah m itu nil", m == nil)
 }
 
 func foo(i *int) {

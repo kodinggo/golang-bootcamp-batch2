@@ -30,6 +30,7 @@ func main() {
 		fmt.Println("type is valid")
 	}
 
+	// Convert ke JSON
 	data := map[string]string{
 		"id":   "1",
 		"name": "Eric",

@@ -39,7 +39,7 @@ func foo(i *int) {
 // mendapatkan nilai dari fungsi melalui argument variable
 func getNilai(n *int64) {
 	result := int64(10)
-	n = &result
+	*n = result
 }
 
 // membuat argument fungsi bersifat opsional

@@ -9,10 +9,21 @@ func main() {
 
 	sum, diff := cal(5, 2)
 	fmt.Println(sum, diff)
+
+	greeting := func() {
+		fmt.Println("sum", sum)
+		fmt.Println("hello")
+	}
+	greeting()
+
+	greet("Joko", func(name string) {
+		fmt.Println(name) // Joko
+	})
 }
 
-func sayHello(name string) string {
-	return "Hi " + name
+func sayHello(name string) (s string) {
+	s = "Hi " + name
+	return
 }
 
 func sum(n ...int) int {
@@ -27,4 +38,8 @@ func sum(n ...int) int {
 
 func cal(a, b int) (int, int) {
 	return a + b, a - b
+}
+
+func greet(name string, callback func(string)) {
+	callback(name)
 }

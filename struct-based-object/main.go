@@ -26,12 +26,21 @@ func (p Person) X() {
 
 }
 
+func NewPerson(name string, age int) User {
+	return &Person{
+		Name: name,
+		Age:  age,
+	}
+}
+
 func main() {
 	// Proses intance
-	var person User = &Person{
-		Name: "Bambang",
-		Age:  23,
-	}
+	// var person User = &Person{
+	// 	Name: "Bambang",
+	// 	Age:  23,
+	// }
+
+	person := NewPerson("Bambang", 23)
 
 	person.CetakName()
 

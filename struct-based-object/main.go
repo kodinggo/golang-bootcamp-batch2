@@ -15,7 +15,7 @@ type Person struct {
 
 // Method milik si Person
 func (p Person) CetakName() {
-	fmt.Println(p.Name)
+	fmt.Println(p.greeting(), p.Name)
 }
 
 func (p *Person) SetName(name string) {
@@ -26,11 +26,19 @@ func (p Person) X() {
 
 }
 
+func (p *Person) greeting() string {
+	return "Hello"
+}
+
 func NewPerson(name string, age int) User {
 	return &Person{
 		Name: name,
 		Age:  age,
 	}
+}
+
+type Mahasiswa struct {
+	Person
 }
 
 func main() {
@@ -47,4 +55,8 @@ func main() {
 	person.SetName("Joko")
 
 	person.CetakName()
+
+	var mhs = &Mahasiswa{}
+	mhs.SetName("Dodo")
+	mhs.CetakName()
 }

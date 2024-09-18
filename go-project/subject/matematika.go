@@ -4,16 +4,16 @@ type SubjectMatemtika interface {
 	GetSubjectName() string
 }
 
-type Matematika struct {
+type matematika struct {
 	SubjectName string
 }
 
-func (m *Matematika) GetSubjectName() string {
+func (m *matematika) GetSubjectName() string {
 	return m.SubjectName
 }
 
 func NewMatematika() SubjectMatemtika {
-	return &Matematika{
+	return &matematika{
 		SubjectName: "Matematika",
 	}
 }

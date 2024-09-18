@@ -12,21 +12,21 @@ type UserMahasiswa interface {
 }
 
 // Object mahasiswa
-type Mahasiswa struct {
+type mahasiswa struct {
 	ID   int64
 	Nama string
 
 	SubjectMtk subject.SubjectMatemtika
 }
 
-func (m *Mahasiswa) SetNama(nama string) {
+func (m *mahasiswa) SetNama(nama string) {
 	m.Nama = nama
 }
 
-func (m *Mahasiswa) GetProfile() string {
+func (m *mahasiswa) GetProfile() string {
 	return fmt.Sprintf("Halo, nama saya %s, saya suka pelajaran %s", m.Nama, m.SubjectMtk.GetSubjectName())
 }
 
 func NewMahasiswa(SubjectMtk subject.SubjectMatemtika) UserMahasiswa {
-	return &Mahasiswa{SubjectMtk: SubjectMtk}
+	return &mahasiswa{SubjectMtk: SubjectMtk}
 }

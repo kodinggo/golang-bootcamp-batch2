@@ -18,13 +18,13 @@ func main() {
 
 	fmt.Println(t)
 
-	strTime := "20/09/2024"
-	layout := "02/01/2006" // dd/mm/yyyy
+	strTime := "20/09/2024" // 2024/09/20
+	layout := "02/01/2006"  // dd/mm/yyyy
 	parsedTime, _ := time.Parse(layout, strTime)
 
 	fmt.Println(parsedTime.Year())
 	fmt.Println(parsedTime.Month())
 	fmt.Println(parsedTime.Day())
 
-	fmt.Println(parsedTime.Format(time.RFC3339))
+	fmt.Println(parsedTime.Format("2006/01/02"))
 }

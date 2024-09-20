@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func main() {
@@ -17,7 +16,9 @@ func main() {
 		go getSequare(num)
 	}
 
-	time.Sleep(1 * time.Millisecond)
+	// time.Sleep(1 * time.Millisecond)
+	var str string
+	fmt.Scan(&str)
 }
 
 func cetak(s string) {

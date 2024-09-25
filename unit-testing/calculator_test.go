@@ -2,24 +2,18 @@ package unittesting
 
 import (
 	"testing"
+	"unit-testing/utils"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Tambah(t *testing.T) {
-	t.Run("berhasil", func(t *testing.T) {
-		result, err := Tambah(1, 1)
+func Test_Calculator(t *testing.T) {
+	t.Run("success using add operator", func(t *testing.T) {
+		math := utils.NewMath()
+		calc := NewCalculator(math)
+
+		result, err := calc.Calculate(1, 1, "+")
 		assert.NoError(t, err)
-		assert.Equal(t, 2, result)
+		assert.Equal(t, int64(2), result)
 	})
-
-	t.Run("gagal", func(t *testing.T) {
-		_, err := Tambah(-1, 1)
-		assert.Error(t, err)
-	})
-}
-
-func Test_Kurang(t *testing.T) {
-	result := Kurang(2, 1)
-	assert.Equal(t, 1, result)
 }

@@ -1,14 +1,24 @@
 package unittesting
 
-import "errors"
+import "unit-testing/utils"
 
-func Tambah(a, b int) (int, error) {
-	if a < 0 || b < 0 {
-		return 0, errors.New("number can't be negative")
-	}
-	return a + b, nil
+type Calculator struct {
+	math utils.Math
 }
 
-func Kurang(a, b int) int {
-	return a - b
+func NewCalculator(math utils.Math) *Calculator {
+	return &Calculator{math: math}
+}
+
+func (c *Calculator) Calculate(n1, n2 int64, operator string) (result int64, err error) {
+	switch operator {
+	case "+":
+		result, err = c.math.Tambah(n1, n2)
+	case "-":
+		result = c.math.Kurang(n1, n2)
+	case "/":
+	case "*":
+	}
+
+	return
 }

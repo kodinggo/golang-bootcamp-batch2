@@ -1,0 +1,6 @@
+port: 8080
+env: development
+mysql:
+  host: localhost
+  username: root
+  password: root

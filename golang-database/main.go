@@ -33,7 +33,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	var customers []Customer
+
 	for rows.Next() {
 		var customer Customer
 		err = rows.Scan(&customer.ID,
@@ -43,6 +45,7 @@ func main() {
 			log.Println("scan customer data:", err.Error())
 			continue
 		}
+
 		customers = append(customers, customer)
 	}
 

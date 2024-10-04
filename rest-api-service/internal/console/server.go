@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/config"
+	httphandler "github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/delivery/http"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"
 )
@@ -18,6 +19,9 @@ var serverCmd = &cobra.Command{
 		e.GET("/ping", func(c echo.Context) error {
 			return c.String(http.StatusOK, "pong!")
 		})
+
+		handler := httphandler.NewStoryHandler()
+		handler.RegisterRoutes(e)
 
 		e.Start(":" + config.Port())
 	},

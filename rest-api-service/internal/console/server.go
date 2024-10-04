@@ -19,7 +19,7 @@ var serverCmd = &cobra.Command{
 			return c.String(http.StatusOK, "pong!")
 		})
 
-		e.Start(":"+config.Port())
+		e.Start(":" + config.Port())
 	},
 }
 

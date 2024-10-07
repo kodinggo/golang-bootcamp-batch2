@@ -3,8 +3,11 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 type storyRepository struct {
@@ -21,15 +24,45 @@ func (r *storyRepository) Create(ctx context.Context, data model.Story) (*model.
 }
 
 func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (results []*model.Story, total int64, err error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT id, title FROM articles")
+	logger := logrus.WithFields(
+		logrus.Fields{
+			"opt": opt,
+		},
+	)
+
+	selectQ := sq.Select("id, title, content, author_id, created_at").
+		From("stories")
+
+	if opt.Keyword != "" {
+		selectQ = selectQ.Where(sq.Like{"title": fmt.Sprintf("%%%s%%", opt.Keyword)})
+	}
+
+	if opt.Cursor != "" {
+		selectQ = selectQ.Where(sq.LtOrEq{"id": opt.Cursor})
+	}
+
+	if opt.SortBy != "" {
+		selectQ = selectQ.OrderBy("id DESC")
+	}
+
+	rowSQL, _, _ := selectQ.ToSql()
+	fmt.Println(rowSQL)
+
+	rows, err := selectQ.RunWith(r.db).QueryContext(ctx)
 	if err != nil {
+		logger.Error(err)
 		return
 	}
 
 	for rows.Next() {
 		var story model.Story
-		if err := rows.Scan(&story.ID, &story.Title); err != nil {
-			// TODO: use log
+		if err := rows.Scan(
+			&story.ID,
+			&story.Title,
+			&story.Content,
+			&story.AuthorID,
+			&story.CreatedAt); err != nil {
+			logger.Error(err)
 			continue
 		}
 		results = append(results, &story)

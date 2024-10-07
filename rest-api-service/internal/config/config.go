@@ -29,3 +29,19 @@ func ENV() string {
 func Port() string {
 	return viper.GetString("port")
 }
+
+func MySQLDBHost() string {
+	return viper.GetString("mysql.dbhost")
+}
+
+func MySQLDBUser() string {
+	return viper.GetString("mysql.dbuser")
+}
+
+func MySQLDBPass() string {
+	return viper.GetString("mysql.dbpass")
+}
+
+func MySQLDBName() string {
+	return viper.GetString("mysql.dbname")
+}

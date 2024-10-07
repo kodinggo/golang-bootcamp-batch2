@@ -2,13 +2,23 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/config"
 )
 
+func NewConnStr() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
+		config.MySQLDBUser(),
+		config.MySQLDBPass(),
+		config.MySQLDBHost(),
+		config.MySQLDBName())
+}
+
 func InitDBConn() *sql.DB {
-	dbConn, err := sql.Open("mysql", "root:@tcp(localhost:3306)/test")
+	dbConn, err := sql.Open("mysql", NewConnStr())
 	if err != nil {
 		panic(err)
 	}

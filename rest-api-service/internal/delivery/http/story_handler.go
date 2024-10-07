@@ -8,11 +8,11 @@ import (
 )
 
 type StoryHandler struct {
-	StoryUsecase model.StoryUsecase
+	storyUsecase model.StoryUsecase
 }
 
-func NewStoryHandler() *StoryHandler {
-	return &StoryHandler{}
+func NewStoryHandler(storyUsecase model.StoryUsecase) *StoryHandler {
+	return &StoryHandler{storyUsecase: storyUsecase}
 }
 
 func (h *StoryHandler) RegisterRoutes(e *echo.Echo) {
@@ -31,10 +31,19 @@ func (h *StoryHandler) findAll(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// TODO
-	// stories, total, err := h.StoryUsecase.FindAll(c.Request().Context(), opt)
+	stories, total, err := h.storyUsecase.FindAll(c.Request().Context(), opt)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
 
-	return c.JSON(http.StatusOK, nil)
+	response := Response{
+		Data: stories,
+		Metadata: map[string]any{
+			"total": total,
+		},
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *StoryHandler) findByID(c echo.Context) error {

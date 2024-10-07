@@ -34,4 +34,5 @@ type Story struct {
 type StoryOpt struct {
 	SortBy  string `query:"sort_by"`
 	Keyword string `query:"keyword"`
+	Cursor  string `query:"cursor"`
 }

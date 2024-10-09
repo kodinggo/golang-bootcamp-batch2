@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
@@ -33,17 +34,28 @@ func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (resu
 	selectQ := sq.Select("id, title, content, author_id, created_at").
 		From("stories")
 
+	selectCount := sq.Select("count(id) as total").From("stories")
+
 	if opt.Keyword != "" {
 		selectQ = selectQ.Where(sq.Like{"title": fmt.Sprintf("%%%s%%", opt.Keyword)})
+		selectCount = selectCount.Where(sq.Like{"title": fmt.Sprintf("%%%s%%", opt.Keyword)})
 	}
 
 	if opt.Cursor != "" {
-		selectQ = selectQ.Where(sq.LtOrEq{"id": opt.Cursor})
+		// Decode from base64 to string id
+		byteCursor, err := base64.StdEncoding.DecodeString(opt.Cursor)
+		if err != nil {
+			return nil, 0, err
+		}
+		var idStr = string(byteCursor)
+		selectQ = selectQ.Where(sq.Lt{"id": idStr})
 	}
 
 	if opt.SortBy != "" {
-		selectQ = selectQ.OrderBy("id DESC")
+		selectQ = selectQ.OrderBy(fmt.Sprintf("id %s", opt.SortBy))
 	}
+
+	selectQ = selectQ.Limit(uint64(opt.Limit))
 
 	rowSQL, _, _ := selectQ.ToSql()
 	fmt.Println(rowSQL)
@@ -67,6 +79,9 @@ func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (resu
 		}
 		results = append(results, &story)
 	}
+
+	row := selectCount.RunWith(r.db).QueryRowContext(ctx)
+	row.Scan(&total)
 
 	return
 }

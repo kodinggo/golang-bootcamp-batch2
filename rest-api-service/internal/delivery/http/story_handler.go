@@ -1,7 +1,9 @@
 package httphandler
 
 import (
+	"encoding/base64"
 	"net/http"
+	"strconv"
 
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
 	"github.com/labstack/echo/v4"
@@ -31,15 +33,26 @@ func (h *StoryHandler) findAll(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	if err := opt.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	stories, total, err := h.storyUsecase.FindAll(c.Request().Context(), opt)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
+	var nextCursor string
+	if len(stories) > 0 {
+		idStr := strconv.Itoa(int(stories[len(stories)-1].ID))
+		nextCursor = base64.StdEncoding.EncodeToString([]byte(idStr))
+	}
+
 	response := Response{
 		Data: stories,
 		Metadata: map[string]any{
-			"total": total,
+			"total":       total,
+			"next_cursor": nextCursor,
 		},
 	}
 

@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"time"
 )
 
@@ -21,6 +23,8 @@ type StoryUsecase interface {
 	Delete(ctx context.Context, id int64) error
 }
 
+const DefaultLimit = 10
+
 type Story struct {
 	ID        int64     `json:"id"`
 	Title     string    `json:"title"`
@@ -35,4 +39,19 @@ type StoryOpt struct {
 	SortBy  string `query:"sort_by"`
 	Keyword string `query:"keyword"`
 	Cursor  string `query:"cursor"`
+	Limit   int64  `query:"limit"`
+}
+
+func (opt *StoryOpt) Validate() error {
+	switch strings.ToLower(opt.SortBy) {
+	case "asc", "desc":
+	default:
+		return errors.New("parameter sort_by is not valid")
+	}
+
+	if opt.Limit <= 0 || opt.Limit > 100 {
+		opt.Limit = DefaultLimit
+	}
+
+	return nil
 }

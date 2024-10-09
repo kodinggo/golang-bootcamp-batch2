@@ -50,7 +50,7 @@ func (h *StoryHandler) findAll(c echo.Context) error {
 
 	response := Response{
 		Data: stories,
-		Metadata: map[string]any{
+		Metadata: &map[string]any{
 			"total":       total,
 			"next_cursor": nextCursor,
 		},
@@ -65,8 +65,24 @@ func (h *StoryHandler) findByID(c echo.Context) error {
 }
 
 func (h *StoryHandler) create(c echo.Context) error {
-	// TODO
-	return c.JSON(http.StatusCreated, nil)
+	var body model.Story
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// TODO: Remove this after implement JWT
+	body.AuthorID = 2
+
+	story, err := h.storyUsecase.Create(c.Request().Context(), body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	response := Response{
+		Data: story,
+	}
+
+	return c.JSON(http.StatusCreated, response)
 }
 
 func (h *StoryHandler) update(c echo.Context) error {

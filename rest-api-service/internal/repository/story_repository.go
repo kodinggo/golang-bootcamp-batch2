@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
@@ -20,8 +21,32 @@ func NewStoryRepository(db *sql.DB) model.StoryRepository {
 }
 
 func (r *storyRepository) Create(ctx context.Context, data model.Story) (*model.Story, error) {
-	// TODO
-	panic("implement me!")
+	timeNowUTC := time.Now().UTC()
+
+	result, err := sq.Insert("stories").
+		Columns("title", "content", "author_id", "created_at").
+		Values(
+			data.Title,
+			data.Content,
+			data.AuthorID,
+			timeNowUTC).
+		RunWith(r.db).
+		ExecContext(ctx)
+	if err != nil {
+		logrus.WithFields(
+			logrus.Fields{
+				"opt": data,
+			},
+		).Errorf("run query insert: %s", err.Error())
+
+		return nil, err
+	}
+
+	newStoryID, _ := result.LastInsertId()
+	data.ID = newStoryID
+	data.CreatedAt = timeNowUTC
+
+	return &data, nil
 }
 
 func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (results []*model.Story, total int64, err error) {

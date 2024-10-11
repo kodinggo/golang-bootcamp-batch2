@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -44,4 +45,12 @@ func MySQLDBPass() string {
 
 func MySQLDBName() string {
 	return viper.GetString("mysql.dbname")
+}
+
+func JWTSigningKey() string {
+	return viper.GetString("jwt.signing_key")
+}
+
+func JWTExp() time.Duration {
+	return viper.GetDuration("jwt.exp")
 }

@@ -44,7 +44,7 @@ type StoryOpt struct {
 
 func (opt *StoryOpt) Validate() error {
 	switch strings.ToLower(opt.SortBy) {
-	case "asc", "desc":
+	case "", "asc", "desc":
 	default:
 		return errors.New("parameter sort_by is not valid")
 	}

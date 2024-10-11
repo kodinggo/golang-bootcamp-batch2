@@ -50,7 +50,7 @@ func (h *StoryHandler) findAll(c echo.Context) error {
 
 	response := Response{
 		Data: stories,
-		Metadata: &map[string]any{
+		Metadata: map[string]any{
 			"total":       total,
 			"next_cursor": nextCursor,
 		},

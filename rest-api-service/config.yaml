@@ -5,3 +5,6 @@ mysql:
   dbuser: root
   dbpass: 
   dbname: rest-api
+jwt:
+  signing_key: mysecretkey
+  exp: 24h

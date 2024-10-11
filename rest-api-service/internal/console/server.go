@@ -21,9 +21,11 @@ var serverCmd = &cobra.Command{
 
 		// Init repository
 		storyRepository := repository.NewStoryRepository(dbConn)
+		userRepository := repository.NewUserRepository(dbConn)
 
 		// Init usecae
 		storyUsecase := usecase.NewStoryUsecase(storyRepository)
+		authUsecase := usecase.NewAuthUsecase(userRepository)
 
 		// Run server
 		e := echo.New()
@@ -32,8 +34,11 @@ var serverCmd = &cobra.Command{
 			return c.String(http.StatusOK, "pong!")
 		})
 
-		handler := httphandler.NewStoryHandler(storyUsecase)
-		handler.RegisterRoutes(e)
+		storyHandler := httphandler.NewStoryHandler(storyUsecase)
+		authHandler := httphandler.NewAuthHandler(authUsecase)
+
+		storyHandler.RegisterRoutes(e)
+		authHandler.RegisterRoutes(e)
 
 		e.Start(":" + config.Port())
 	},

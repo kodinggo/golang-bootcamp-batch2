@@ -22,9 +22,9 @@ func (h *StoryHandler) RegisterRoutes(e *echo.Echo) {
 
 	g.GET("", h.findAll)
 	g.GET("/:id", h.findByID)
-	g.POST("", h.create)
-	g.PUT("/:id", h.update)
-	g.DELETE("/:id", h.delete)
+	g.POST("", h.create, authMiddleware)
+	g.PUT("/:id", h.update, authMiddleware)
+	g.DELETE("/:id", h.delete, authMiddleware)
 }
 
 func (h *StoryHandler) findAll(c echo.Context) error {
@@ -70,8 +70,11 @@ func (h *StoryHandler) create(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// TODO: Remove this after implement JWT
-	body.AuthorID = 2
+	claim := c.Request().Context().Value(model.BearerAuthKey)
+	authUserData, ok := claim.(model.CustomClaims)
+	if ok {
+		body.AuthorID = authUserData.UserID
+	}
 
 	story, err := h.storyUsecase.Create(c.Request().Context(), body)
 	if err != nil {

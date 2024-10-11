@@ -6,6 +6,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type ContextAuthKey string
+
+const BearerAuthKey ContextAuthKey = "BearerAuth"
+
 type CustomClaims struct {
 	UserID int64 `json:"user_id"`
 	jwt.RegisteredClaims

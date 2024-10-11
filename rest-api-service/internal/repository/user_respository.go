@@ -37,6 +37,25 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (user *m
 	return &data, nil
 }
 
+func (r *userRepository) FindByID(ctx context.Context, id int64) (user *model.User, err error) {
+	row := sq.Select("id", "name", "email", "role", "created_at").
+		From("users").
+		Where(sq.Eq{"id": id}).
+		RunWith(r.db).
+		QueryRowContext(ctx)
+	var data model.User
+	if err = row.Scan(
+		&data.ID,
+		&data.Name,
+		&data.Email,
+		&data.Role,
+		&data.CreatedAt); err != nil {
+		logrus.WithField("id", id).Error(err)
+	}
+
+	return &data, nil
+}
+
 func (r *userRepository) Create(ctx context.Context, data model.User) (newUser *model.User, err error) {
 	timeNow := time.Now().UTC()
 

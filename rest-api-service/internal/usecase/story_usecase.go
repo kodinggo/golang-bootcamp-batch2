@@ -2,19 +2,31 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
 )
 
 type storyUsecase struct {
 	storyRepository model.StoryRepository
+	userRepository  model.UserRepository
 }
 
-func NewStoryUsecase(storyRepository model.StoryRepository) model.StoryRepository {
-	return &storyUsecase{storyRepository: storyRepository}
+func NewStoryUsecase(storyRepository model.StoryRepository, userRepository model.UserRepository) model.StoryRepository {
+	return &storyUsecase{storyRepository: storyRepository, userRepository: userRepository}
 }
 
-func (u *storyUsecase) Create(ctx context.Context, data model.Story) (*model.Story, error) {
+func (u *storyUsecase) Create(ctx context.Context, data model.Story) (story *model.Story, err error) {
+	user, err := u.userRepository.FindByID(ctx, data.AuthorID)
+	if err != nil {
+		return
+	}
+
+	if !model.AllowedRolesToManageStory[user.Role] {
+		err = errors.New("user does not have access")
+		return
+	}
+
 	return u.storyRepository.Create(ctx, data)
 }
 

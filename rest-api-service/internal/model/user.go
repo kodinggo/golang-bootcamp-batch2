@@ -7,14 +7,16 @@ import (
 
 type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindByID(ctx context.Context, id int64) (*User, error)
 	Create(ctx context.Context, data User) (*User, error)
 }
 
 type Role string
 
 const (
-	AuthorRole Role = "AUTHOR"
-	AdminRole  Role = "ADMIN"
+	AuthorRole   Role = "AUTHOR"
+	AdminRole    Role = "ADMIN"
+	ReviewerRole Role = "REVIEWER"
 )
 
 type User struct {

@@ -25,6 +25,11 @@ type StoryUsecase interface {
 
 const DefaultLimit = 10
 
+var AllowedRolesToManageStory = map[Role]bool{
+	AdminRole:  true,
+	AuthorRole: true,
+}
+
 type Story struct {
 	ID        int64     `json:"id"`
 	Title     string    `json:"title"`

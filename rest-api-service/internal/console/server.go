@@ -24,7 +24,7 @@ var serverCmd = &cobra.Command{
 		userRepository := repository.NewUserRepository(dbConn)
 
 		// Init usecae
-		storyUsecase := usecase.NewStoryUsecase(storyRepository)
+		storyUsecase := usecase.NewStoryUsecase(storyRepository, userRepository)
 		authUsecase := usecase.NewAuthUsecase(userRepository)
 
 		// Run server

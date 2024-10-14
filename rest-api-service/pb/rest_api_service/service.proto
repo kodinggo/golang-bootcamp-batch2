@@ -4,6 +4,44 @@ package pb.rest_api_service;
 
 option go_package = "pb/rest_api_service";
 
+import "google/protobuf/timestamp.proto";
+
 message User {
     int64 id = 1;
+    string name = 2;
+    string email = 3;
+    string password = 4;
+    Role role = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+
+    enum Role {
+        AUTHOR = 0;
+        ADMIN = 1;
+        REVIEWER = 2;
+    }
+}
+
+message Story {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+    int64 author_id = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message StoryFindAllResponse {
+    repeated Story stories = 1;
+}
+
+message StoryFindAllRequest {
+    string sort_by = 1;
+    string keyword = 2;
+    string cursor = 3;
+    int64 limit = 4;
+}
+
+service StoryService {
+    rpc FindAll(StoryFindAllRequest) returns (StoryFindAllResponse);
 }

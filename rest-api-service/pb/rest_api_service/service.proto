@@ -1,0 +1,9 @@
+syntax="proto3";
+
+package pb.rest_api_service;
+
+option go_package = "pb/rest_api_service";
+
+message User {
+    int64 id = 1;
+}

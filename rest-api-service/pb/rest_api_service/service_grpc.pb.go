@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,7 +23,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StoryServiceClient interface {
-	FindAll(ctx context.Context, in *StoryFindAllRequest, opts ...grpc.CallOption) (*StoryFindAllResponse, error)
+	FindAll(ctx context.Context, in *StoryFindAllRequest, opts ...grpc.CallOption) (*Stories, error)
+	FindByID(ctx context.Context, in *StoryFindByIDRequest, opts ...grpc.CallOption) (*Story, error)
+	Create(ctx context.Context, in *StoryCreateRequest, opts ...grpc.CallOption) (*Story, error)
+	Update(ctx context.Context, in *StoryUpdateRequest, opts ...grpc.CallOption) (*Story, error)
+	Delete(ctx context.Context, in *StoryDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type storyServiceClient struct {
@@ -33,9 +38,45 @@ func NewStoryServiceClient(cc grpc.ClientConnInterface) StoryServiceClient {
 	return &storyServiceClient{cc}
 }
 
-func (c *storyServiceClient) FindAll(ctx context.Context, in *StoryFindAllRequest, opts ...grpc.CallOption) (*StoryFindAllResponse, error) {
-	out := new(StoryFindAllResponse)
+func (c *storyServiceClient) FindAll(ctx context.Context, in *StoryFindAllRequest, opts ...grpc.CallOption) (*Stories, error) {
+	out := new(Stories)
 	err := c.cc.Invoke(ctx, "/pb.rest_api_service.StoryService/FindAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storyServiceClient) FindByID(ctx context.Context, in *StoryFindByIDRequest, opts ...grpc.CallOption) (*Story, error) {
+	out := new(Story)
+	err := c.cc.Invoke(ctx, "/pb.rest_api_service.StoryService/FindByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storyServiceClient) Create(ctx context.Context, in *StoryCreateRequest, opts ...grpc.CallOption) (*Story, error) {
+	out := new(Story)
+	err := c.cc.Invoke(ctx, "/pb.rest_api_service.StoryService/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storyServiceClient) Update(ctx context.Context, in *StoryUpdateRequest, opts ...grpc.CallOption) (*Story, error) {
+	out := new(Story)
+	err := c.cc.Invoke(ctx, "/pb.rest_api_service.StoryService/Update", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storyServiceClient) Delete(ctx context.Context, in *StoryDeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/pb.rest_api_service.StoryService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +87,11 @@ func (c *storyServiceClient) FindAll(ctx context.Context, in *StoryFindAllReques
 // All implementations must embed UnimplementedStoryServiceServer
 // for forward compatibility
 type StoryServiceServer interface {
-	FindAll(context.Context, *StoryFindAllRequest) (*StoryFindAllResponse, error)
+	FindAll(context.Context, *StoryFindAllRequest) (*Stories, error)
+	FindByID(context.Context, *StoryFindByIDRequest) (*Story, error)
+	Create(context.Context, *StoryCreateRequest) (*Story, error)
+	Update(context.Context, *StoryUpdateRequest) (*Story, error)
+	Delete(context.Context, *StoryDeleteRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedStoryServiceServer()
 }
 
@@ -54,8 +99,20 @@ type StoryServiceServer interface {
 type UnimplementedStoryServiceServer struct {
 }
 
-func (UnimplementedStoryServiceServer) FindAll(context.Context, *StoryFindAllRequest) (*StoryFindAllResponse, error) {
+func (UnimplementedStoryServiceServer) FindAll(context.Context, *StoryFindAllRequest) (*Stories, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindAll not implemented")
+}
+func (UnimplementedStoryServiceServer) FindByID(context.Context, *StoryFindByIDRequest) (*Story, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindByID not implemented")
+}
+func (UnimplementedStoryServiceServer) Create(context.Context, *StoryCreateRequest) (*Story, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedStoryServiceServer) Update(context.Context, *StoryUpdateRequest) (*Story, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedStoryServiceServer) Delete(context.Context, *StoryDeleteRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedStoryServiceServer) mustEmbedUnimplementedStoryServiceServer() {}
 
@@ -88,6 +145,78 @@ func _StoryService_FindAll_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StoryService_FindByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoryFindByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoryServiceServer).FindByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.rest_api_service.StoryService/FindByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoryServiceServer).FindByID(ctx, req.(*StoryFindByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StoryService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoryCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoryServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.rest_api_service.StoryService/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoryServiceServer).Create(ctx, req.(*StoryCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StoryService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoryUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoryServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.rest_api_service.StoryService/Update",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoryServiceServer).Update(ctx, req.(*StoryUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StoryService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoryDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StoryServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.rest_api_service.StoryService/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StoryServiceServer).Delete(ctx, req.(*StoryDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StoryService_ServiceDesc is the grpc.ServiceDesc for StoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +227,22 @@ var StoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindAll",
 			Handler:    _StoryService_FindAll_Handler,
+		},
+		{
+			MethodName: "FindByID",
+			Handler:    _StoryService_FindByID_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _StoryService_Create_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _StoryService_Update_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _StoryService_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

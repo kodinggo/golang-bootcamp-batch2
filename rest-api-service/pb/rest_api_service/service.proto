@@ -5,6 +5,7 @@ package pb.rest_api_service;
 option go_package = "pb/rest_api_service";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 message User {
     int64 id = 1;
@@ -31,7 +32,7 @@ message Story {
     google.protobuf.Timestamp updated_at = 6;
 }
 
-message StoryFindAllResponse {
+message Stories {
     repeated Story stories = 1;
 }
 
@@ -42,6 +43,31 @@ message StoryFindAllRequest {
     int64 limit = 4;
 }
 
+message StoryFindByIDRequest {
+    int64 id = 1;
+}
+
+message StoryCreateRequest {
+    string title = 1;
+    string content = 2;
+    int64 author_id = 3;
+}
+
+message StoryUpdateRequest {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+    int64 author_id = 4;
+}
+
+message StoryDeleteRequest {
+    int64 id = 1;
+}
+
 service StoryService {
-    rpc FindAll(StoryFindAllRequest) returns (StoryFindAllResponse);
+    rpc FindAll(StoryFindAllRequest) returns (Stories);
+    rpc FindByID(StoryFindByIDRequest) returns (Story);
+    rpc Create(StoryCreateRequest) returns (Story);
+    rpc Update(StoryUpdateRequest) returns (Story);
+    rpc Delete(StoryDeleteRequest) returns (google.protobuf.Empty);
 }

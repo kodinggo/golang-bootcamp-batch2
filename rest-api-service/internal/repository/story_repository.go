@@ -8,16 +8,21 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/cache"
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
 	"github.com/sirupsen/logrus"
 )
 
 type storyRepository struct {
-	db *sql.DB
+	db          *sql.DB
+	redisClient *cache.RedisClient
 }
 
-func NewStoryRepository(db *sql.DB) model.StoryRepository {
-	return &storyRepository{db: db}
+func NewStoryRepository(db *sql.DB, redisClient *cache.RedisClient) model.StoryRepository {
+	return &storyRepository{
+		db:          db,
+		redisClient: redisClient,
+	}
 }
 
 func (r *storyRepository) Create(ctx context.Context, data model.Story) (*model.Story, error) {
@@ -46,6 +51,8 @@ func (r *storyRepository) Create(ctx context.Context, data model.Story) (*model.
 	data.ID = newStoryID
 	data.CreatedAt = timeNowUTC
 
+	// TODO: insert dta to redis
+
 	return &data, nil
 }
 
@@ -55,6 +62,18 @@ func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (resu
 			"opt": opt,
 		},
 	)
+
+	// TODO: check is data stored in redis?
+	// if yes, get data from redis and return directly
+	bucketKey := storyListBucketKey
+	cacheKey := newStoryListCacheKey(opt)
+	err = r.redisClient.HGet(ctx, bucketKey, cacheKey, &results)
+	if err != nil {
+		logger.Errorf("get data from redis: %s", err.Error())
+	}
+	if len(results) > 0 {
+		return
+	}
 
 	selectQ := sq.Select("id, title, content, author_id, created_at").
 		From("stories")
@@ -108,12 +127,53 @@ func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (resu
 	row := selectCount.RunWith(r.db).QueryRowContext(ctx)
 	row.Scan(&total)
 
+	// Store data to redis
+	err = r.redisClient.HSet(ctx, bucketKey, cacheKey, results)
+	if err != nil {
+		logger.Error(err)
+	}
+
 	return
 }
 
-func (r *storyRepository) FindByID(ctx context.Context, id int64) (*model.Story, error) {
-	// TODO
-	panic("implement me!")
+func (r *storyRepository) FindByID(ctx context.Context, id int64) (story *model.Story, err error) {
+	logger := logrus.WithFields(
+		logrus.Fields{
+			"id": id,
+		},
+	)
+
+	cacheKey := newStoryDetailKey(id)
+	err = r.redisClient.Get(ctx, cacheKey, &story)
+	if err != nil {
+		logger.Errorf("get data from redis: %s", err.Error())
+	}
+	// if data is found in redis, return it
+	if story.ID > 0 {
+		return story, nil
+	}
+
+	// continue select from db
+	row := sq.Select("id, title, content, author_id, created_at").
+		From("stories").
+		Where(sq.Eq{"id": id}).RunWith(r.db).QueryRowContext(ctx)
+	if err = row.Scan(
+		&story.ID,
+		&story.Title,
+		&story.Content,
+		&story.AuthorID,
+		&story.CreatedAt); err != nil {
+		logger.Errorf("scan data from db: %s", err.Error())
+		return
+	}
+
+	// Store data to redis
+	err = r.redisClient.Set(ctx, cacheKey, story, 0)
+	if err != nil {
+		logger.Errorf("set data to redis: %s", err.Error())
+	}
+
+	return
 }
 
 func (r *storyRepository) Update(ctx context.Context, id int64) error {

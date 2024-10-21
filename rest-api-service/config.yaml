@@ -8,3 +8,7 @@ mysql:
 jwt:
   signing_key: mysecretkey
   exp: 24h
+redis:
+  host: localhost:6379
+  pass: 
+  db: 0

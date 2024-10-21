@@ -4,70 +4,16 @@ package pb.rest_api_service;
 
 option go_package = "pb/rest_api_service";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-message User {
-    int64 id = 1;
-    string name = 2;
-    string email = 3;
-    string password = 4;
-    Role role = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
-
-    enum Role {
-        AUTHOR = 0;
-        ADMIN = 1;
-        REVIEWER = 2;
-    }
-}
-
-message Story {
-    int64 id = 1;
-    string title = 2;
-    string content = 3;
-    int64 author_id = 4;
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp updated_at = 6;
-}
-
-message Stories {
-    repeated Story stories = 1;
-}
-
-message StoryFindAllRequest {
-    string sort_by = 1;
-    string keyword = 2;
-    string cursor = 3;
-    int64 limit = 4;
-}
-
-message StoryFindByIDRequest {
-    int64 id = 1;
-}
-
-message StoryCreateRequest {
-    string title = 1;
-    string content = 2;
-    int64 author_id = 3;
-}
-
-message StoryUpdateRequest {
-    int64 id = 1;
-    string title = 2;
-    string content = 3;
-    int64 author_id = 4;
-}
-
-message StoryDeleteRequest {
-    int64 id = 1;
-}
+import "pb/rest_api_service/user.proto";
+import "pb/rest_api_service/story.proto";
+import "pb/rest_api_service/story_request.proto";
 
 service StoryService {
     rpc FindAll(StoryFindAllRequest) returns (Stories);
-    rpc FindByID(StoryFindByIDRequest) returns (Story);
+    rpc FindByID(StoryByIDRequest) returns (Story);
     rpc Create(StoryCreateRequest) returns (Story);
     rpc Update(StoryUpdateRequest) returns (Story);
-    rpc Delete(StoryDeleteRequest) returns (google.protobuf.Empty);
+    rpc Delete(StoryByIDRequest) returns (google.protobuf.Empty);
 }

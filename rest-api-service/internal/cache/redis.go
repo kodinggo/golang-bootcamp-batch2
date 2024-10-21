@@ -53,7 +53,12 @@ func (r *RedisClient) Del(ctx context.Context, key string) error {
 }
 
 func (r *RedisClient) HSet(ctx context.Context, bucketKey string, cacheKey string, data any) error {
-	err := r.client.HSet(ctx, bucketKey, cacheKey, data).Err()
+	byteData, err := json.Marshal(data)
+	if err != nil {
+		logrus.Errorf("marshal data to storing redis: %v", err.Error())
+		return err
+	}
+	err = r.client.HSet(ctx, bucketKey, cacheKey, byteData).Err()
 	if err != nil {
 		logrus.Errorf("set data hash to redis: %v", err.Error())
 	}
@@ -64,7 +69,16 @@ func (r *RedisClient) HGet(ctx context.Context, bucketKey, cacheKey string, data
 	strData, err := r.client.HGet(ctx, bucketKey, cacheKey).Result()
 	if err != nil {
 		logrus.Errorf("get data hash from redis: %v", err.Error())
+		return err
 	}
 	json.Unmarshal([]byte(strData), &data)
+	return err
+}
+
+func (r *RedisClient) HDel(ctx context.Context, bucketKey string) error {
+	err := r.client.HDel(ctx, bucketKey).Err()
+	if err != nil {
+		logrus.Errorf("delete data hash from redis: %v", err.Error())
+	}
 	return err
 }

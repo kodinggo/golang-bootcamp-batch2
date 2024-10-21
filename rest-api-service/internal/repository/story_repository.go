@@ -10,6 +10,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/cache"
 	"github.com/kodinggo/golang-bootcamp-batch2/rest-api-service/internal/model"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
 
@@ -68,7 +69,7 @@ func (r *storyRepository) FindAll(ctx context.Context, opt model.StoryOpt) (resu
 	bucketKey := storyListBucketKey
 	cacheKey := newStoryListCacheKey(opt)
 	err = r.redisClient.HGet(ctx, bucketKey, cacheKey, &results)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		logger.Errorf("get data from redis: %s", err.Error())
 	}
 	if len(results) > 0 {
@@ -145,7 +146,7 @@ func (r *storyRepository) FindByID(ctx context.Context, id int64) (story *model.
 
 	cacheKey := newStoryDetailKey(id)
 	err = r.redisClient.Get(ctx, cacheKey, &story)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		logger.Errorf("get data from redis: %s", err.Error())
 	}
 	// if data is found in redis, return it
@@ -177,11 +178,24 @@ func (r *storyRepository) FindByID(ctx context.Context, id int64) (story *model.
 }
 
 func (r *storyRepository) Update(ctx context.Context, id int64) error {
-	// TODO
-	panic("implement me!")
+	// Run Update query
+
+	// Invalidate cache
+	r.invalidateCache(ctx, id)
+
+	return nil
 }
 
 func (r *storyRepository) Delete(ctx context.Context, id int64) error {
-	// TODO
-	panic("implement me!")
+	// Run Delete query
+
+	// Invalidate cache
+	r.invalidateCache(ctx, id)
+
+	return nil
+}
+
+func (r *storyRepository) invalidateCache(ctx context.Context, id int64) {
+	r.redisClient.Del(ctx, newStoryDetailKey(id))
+	r.redisClient.HDel(ctx, storyListBucketKey)
 }
